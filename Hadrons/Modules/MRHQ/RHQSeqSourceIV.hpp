@@ -135,7 +135,7 @@ void TRHQSeqSourceIV<FImpl, GImpl>::setup(void)
 // execution ///////////////////////////////////////////////////////////////////
 // makeSource //////////////////////////////////////////////////////////////////
 template <typename FImpl, typename GImpl>
-void TRHQSeqSourceII<FImpl, GImpl>::makeSource(PropagatorField &src, 
+void TRHQSeqSourceIV<FImpl, GImpl>::makeSource(PropagatorField &src, 
                                                const PropagatorField &q)
 {
     
@@ -151,7 +151,7 @@ void TRHQSeqSourceII<FImpl, GImpl>::makeSource(PropagatorField &src,
         envGetTmp(LatticeComplex, coor);
         ph = Zero();
 
-        if (par().momType == OpIIMomType::Sink)
+        if (par().momType == OpIVMomType::Sink)
         {
             for(unsigned int mu = 0; mu < env().getNd(); mu++)
             {
@@ -167,6 +167,7 @@ void TRHQSeqSourceII<FImpl, GImpl>::makeSource(PropagatorField &src,
     
     auto &field = envGet(PropagatorField, par().q);
     const auto &gaugefield = envGet(GaugeField, par().gauge);
+    const auto &index = par().index;
     const auto gauge_x = peekLorentz(gaugefield, 0);
     const auto gauge_y = peekLorentz(gaugefield, 1);
     const auto gauge_z = peekLorentz(gaugefield, 2);
