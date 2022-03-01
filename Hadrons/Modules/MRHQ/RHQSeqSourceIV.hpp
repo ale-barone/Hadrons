@@ -202,15 +202,43 @@ void TRHQSeqSourceIV<FImpl, GImpl>::makeSource(PropagatorField &src,
             HADRONS_ERROR(Argument, "Index must be in {0, 1, 2, 3}."); 
     }
 
-    PropagatorField src_f = 
-        gi*gx*g5 * Dx_f - gx*gi*g5 * Dx_f
-      + gi*gy*g5 * Dy_f - gy*gi*g5 * Dy_f
-      + gi*gz*g5 * Dz_f - gz*gi*g5 * Dz_f;
+    // x
+    double ph_px = (2*M_PI*p[0]/env().getDim(0));
+    
+    ComplexD ph_px_f = exp(i*ph_px);
+    PropagatorField src_x_f = gi*gx*g5 * Dx_f - gx*gi*g5 * Dx_f;
+    src_x_f = ph_px_f*src_x_f;
+    
+    ComplexD ph_px_b = exp(-i*ph_px);
+    PropagatorField src_x_b = gi*gx*g5 * Dx_b - gx*gi*g5 * Dx_b;
+    src_x_b = ph_px_b*src_x_b;
 
-    PropagatorField src_b =
-        gi*gx*g5 * Dx_b - gx*gi*g5 * Dx_b
-      + gi*gy*g5 * Dy_b - gy*gi*g5 * Dy_b
-      + gi*gz*g5 * Dz_b - gz*gi*g5 * Dz_b;
+    // y
+    double ph_py = 2*M_PI*p[1]/env().getDim(1);
+    
+    ComplexD ph_py_f = exp(i*ph_py);
+    PropagatorField src_y_f = gi*gy*g5 * Dy_f - gy*gi*g5 * Dy_f;
+    src_y_f = ph_py_f*src_y_f;
+
+    ComplexD ph_py_b = exp(-i*ph_py);
+    PropagatorField src_y_b = gi*gy*g5 * Dy_b - gy*gi*g5 * Dy_b;
+    src_y_b = ph_py_b*src_y_b;
+
+    // z
+    double ph_pz = 2*M_PI*p[2]/env().getDim(2);
+    
+    ComplexD ph_pz_f = exp(i*ph_pz);
+    PropagatorField src_z_f = gi*gz*g5 * Dz_f - gz*gi*g5 * Dz_f;
+    src_z_f = ph_pz_f*src_z_f;
+
+    ComplexD ph_pz_b = exp(-i*ph_pz);
+    PropagatorField src_z_b = gi*gz*g5 * Dz_b - gz*gi*g5 * Dz_b;
+    src_z_b = ph_pz_b*src_z_b;
+
+    // forward
+    PropagatorField src_f = src_x_f + src_y_f + src_z_f;
+    // backward
+    PropagatorField src_b = src_x_b + src_y_b + src_z_b;
 
     if (index == 3)
     {        
@@ -225,13 +253,10 @@ void TRHQSeqSourceIV<FImpl, GImpl>::makeSource(PropagatorField &src,
     }
     else
     {        
-        double ph_n = (2*M_PI*p[index]/env().getDim(index));
-		ComplexD ph_f = exp(i*ph_n);
-		ComplexD ph_b = exp(-i*ph_n);
-
-	    src = -ph_f*src_f + ph_b*src_b;
+        src = src_b - src_f;
         src = where((t == par().t), ph*src, 0.*src);
     }
+    src = 0.5*src;
 
 }
 
