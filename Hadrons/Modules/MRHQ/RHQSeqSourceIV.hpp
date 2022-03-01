@@ -239,23 +239,9 @@ void TRHQSeqSourceIV<FImpl, GImpl>::makeSource(PropagatorField &src,
     PropagatorField src_f = src_x_f + src_y_f + src_z_f;
     // backward
     PropagatorField src_b = src_x_b + src_y_b + src_z_b;
-
-    if (index == 3)
-    {        
-        // for forward shift
-        int t_f = par().t-1;
-        src_f = where((t == t_f), ph*src_f, 0.*src_f);
-        // for backward shift
-        int t_b = par().t+1;
-        src_b = where((t == t_b), ph*src_b, 0.*src_b);
-
-	    src = src_b - src_f;
-    }
-    else
-    {        
-        src = src_b - src_f;
-        src = where((t == par().t), ph*src, 0.*src);
-    }
+    
+    src = src_b - src_f;
+    src = where((t == par().t), ph*src, 0.*src);
     src = 0.5*src;
 
 }
