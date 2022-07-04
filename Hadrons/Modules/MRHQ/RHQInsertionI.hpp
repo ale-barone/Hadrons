@@ -47,7 +47,8 @@ public:
                                     std::string,    q,
                                     unsigned int,   index,
                                     Gamma::Algebra, gamma5,
-                                    std::string,    gauge);
+                                    std::string,    gauge, 
+                                    std::string,    propTwist);
 };
 
 template <typename FImpl, typename GImpl>
@@ -131,10 +132,25 @@ void TRHQInsertionI<FImpl, GImpl>::execute(void)
     auto &field = envGet(PropagatorField, par().q);
     const auto &gaugefield = envGet(GaugeField, par().gauge);
     const auto internal_gauge = peekLorentz(gaugefield, index);
-    PropagatorField insertion = g5*(GImpl::CovShiftForward(internal_gauge,index,field) - GImpl::CovShiftBackward(internal_gauge,index,field));
+
+    // In case the propagator we are applying the RHQInseriton on contains twist
+    ComplexD        i(0.0,1.0);
+    ComplexD ph_f = exp(-i*0.);
+    ComplexD ph_b = exp(i*0.);
+
+    if (!par().propTwist.empty())
+    {
+        std::vector<RealD> p;
+        p = strToVec<RealD>(par().propTwist);
     
+        double q_index = (2*M_PI*p[index]/env().getDim(index));
+        ph_f = exp(-i*q_index);
+        ph_b = exp(i*q_index);
+    }
+    
+    PropagatorField insertion = g5*(ph_f*GImpl::CovShiftForward(internal_gauge,index,field) - ph_b*GImpl::CovShiftBackward(internal_gauge,index,field));
     auto &out = envGet(PropagatorField, getName());
-    out = insertion;
+    out = insertion;    
 }
 
 END_MODULE_NAMESPACE

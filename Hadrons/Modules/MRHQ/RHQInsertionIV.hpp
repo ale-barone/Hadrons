@@ -50,6 +50,7 @@ public:
                                     unsigned int,   index,
                                     Gamma::Algebra, gamma5,
                                     std::string,    gauge,
+                                    std::string,    propTwist,
                                     OpIVFlag,       flag);
 };
 
@@ -125,6 +126,38 @@ void TRHQInsertionIV<FImpl, GImpl>::execute(void)
         HADRONS_ERROR(Argument, "gamma5 must be either 'Gamma5' or 'Identity'."); 
     }
     Gamma g5(par().gamma5);
+
+    // In case the propagator we are applying the RHQInseriton on contains twist
+    ComplexD          i(0.0,1.0);
+
+    ComplexD ph_f_x = exp(-i*0.);
+    ComplexD ph_b_x = exp(i*0.);
+    
+    ComplexD ph_f_y = exp(-i*0.);
+    ComplexD ph_b_y = exp(i*0.);
+
+    ComplexD ph_f_z = exp(-i*0.);
+    ComplexD ph_b_z = exp(i*0.);
+
+    if (!par().propTwist.empty())
+    {
+        std::vector<RealD> p;
+        p = strToVec<RealD>(par().propTwist);
+    
+        double q_x    = (2*M_PI*p[0]/env().getDim(0));
+        double q_y    = (2*M_PI*p[1]/env().getDim(0));
+        double q_z    = (2*M_PI*p[2]/env().getDim(0));
+        
+        ph_f_x = exp(-i*q_x);
+        ph_b_x = exp(i*q_x);
+
+        ph_f_y = exp(-i*q_y);
+        ph_b_y = exp(i*q_y);
+
+        ph_f_z = exp(-i*q_z);
+        ph_b_z = exp(i*q_z);
+    }
+
     
     auto &field = envGet(PropagatorField, par().q);
     const auto &gaugefield = envGet(GaugeField, par().gauge);
@@ -136,9 +169,9 @@ void TRHQInsertionIV<FImpl, GImpl>::execute(void)
     Gamma gy(Gamma::Algebra::GammaY);
     Gamma gz(Gamma::Algebra::GammaZ);
 
-    const PropagatorField Dx = GImpl::CovShiftForward(gauge_x,0,field) - GImpl::CovShiftBackward(gauge_x,0,field);
-    const PropagatorField Dy = GImpl::CovShiftForward(gauge_y,1,field) - GImpl::CovShiftBackward(gauge_y,1,field);
-    const PropagatorField Dz = GImpl::CovShiftForward(gauge_z,2,field) - GImpl::CovShiftBackward(gauge_z,2,field);
+    const PropagatorField Dx = ph_f_x*GImpl::CovShiftForward(gauge_x,0,field) - ph_b_x*GImpl::CovShiftBackward(gauge_x,0,field);
+    const PropagatorField Dy = ph_f_y*GImpl::CovShiftForward(gauge_y,1,field) - ph_b_y*GImpl::CovShiftBackward(gauge_y,1,field);
+    const PropagatorField Dz = ph_f_z*GImpl::CovShiftForward(gauge_z,2,field) - ph_b_z*GImpl::CovShiftBackward(gauge_z,2,field);
 
     Gamma::Algebra gi; 
     switch(par().index){
