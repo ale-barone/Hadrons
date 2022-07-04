@@ -159,9 +159,9 @@ void TRHQSeqSourceII<FImpl, GImpl>::makeSource(PropagatorField &src,
     auto &t   = envGet(Lattice<iScalar<vInteger>>, tName_);
     Gamma g5(par().gamma5);
 
-    Complex           i(0.0,1.0);
-    std::vector<Real> p;
-    p = strToVec<Real>(par().mom);
+    ComplexD           i(0.0,1.0);
+    std::vector<RealD> p;
+    p = strToVec<RealD>(par().mom);
 
     if (!hasPhase_)
     {
@@ -177,7 +177,7 @@ void TRHQSeqSourceII<FImpl, GImpl>::makeSource(PropagatorField &src,
             }   
         }
 
-        ph = exp((Real)(2*M_PI)*i*ph);
+        ph = exp((RealD)(2*M_PI)*i*ph);
         LatticeCoordinate(t, Tp);
         hasPhase_ = true;
     }
@@ -203,9 +203,9 @@ void TRHQSeqSourceII<FImpl, GImpl>::makeSource(PropagatorField &src,
     }
     else
     {        
-        double ph_n = (2*M_PI*p[index]/env().getDim(index));
-		ComplexD ph_f = exp(i*ph_n);
-		ComplexD ph_b = exp(-i*ph_n);
+        double q_index = (2*M_PI*p[index]/env().getDim(index));
+		ComplexD ph_f = exp(i*q_index);
+		ComplexD ph_b = exp(-i*q_index);
 
 	    src = -ph_f*src_f + ph_b*src_b;
         src = where((t == par().t), ph*(g5*src), 0.*src);
