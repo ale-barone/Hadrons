@@ -134,6 +134,8 @@ void TRHQInsertionI<FImpl, GImpl>::execute(void)
     const auto internal_gauge = peekLorentz(gaugefield, index);
 
     // In case the propagator we are applying the RHQInseriton on contains twist
+    // NB G(y,x) = <c(y)\bar{c}(x)> and with twist p
+    //    G_tw(y,x) = <c_tw(y)\bar{c}_tw(x)> = exp(-ip.y) <c(y)\bar{c}(x)> exp(ip.x) 
     ComplexD        i(0.0,1.0);
     ComplexD ph_f = exp(-i*0.);
     ComplexD ph_b = exp(i*0.);
@@ -144,8 +146,8 @@ void TRHQInsertionI<FImpl, GImpl>::execute(void)
         p = strToVec<RealD>(par().propTwist);
     
         double q_index = (2*M_PI*p[index]/env().getDim(index));
-        ph_f = exp(-i*q_index);
-        ph_b = exp(i*q_index);
+        ph_f = exp(i*q_index);
+        ph_b = exp(-i*q_index);
     }
     
     PropagatorField insertion = g5*(ph_f*GImpl::CovShiftForward(internal_gauge,index,field) - ph_b*GImpl::CovShiftBackward(internal_gauge,index,field));

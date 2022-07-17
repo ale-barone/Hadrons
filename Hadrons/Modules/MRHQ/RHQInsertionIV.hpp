@@ -145,17 +145,17 @@ void TRHQInsertionIV<FImpl, GImpl>::execute(void)
         p = strToVec<RealD>(par().propTwist);
     
         double q_x    = (2*M_PI*p[0]/env().getDim(0));
-        double q_y    = (2*M_PI*p[1]/env().getDim(0));
-        double q_z    = (2*M_PI*p[2]/env().getDim(0));
+        double q_y    = (2*M_PI*p[1]/env().getDim(1));
+        double q_z    = (2*M_PI*p[2]/env().getDim(2));
         
-        ph_f_x = exp(-i*q_x);
-        ph_b_x = exp(i*q_x);
+        ph_f_x = exp(i*q_x);
+        ph_b_x = exp(-i*q_x);
 
-        ph_f_y = exp(-i*q_y);
-        ph_b_y = exp(i*q_y);
+        ph_f_y = exp(i*q_y);
+        ph_b_y = exp(-i*q_y);
 
-        ph_f_z = exp(-i*q_z);
-        ph_b_z = exp(i*q_z);
+        ph_f_z = exp(i*q_z);
+        ph_b_z = exp(-i*q_z);
     }
 
     
